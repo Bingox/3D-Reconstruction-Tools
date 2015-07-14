@@ -14,11 +14,17 @@ IMAGES_PER_CLUSTER=100
 CPU_CORES=8
 MAX_MATCHING_SEQ=-1
 SIFTKEY_CORES=1 # For big images and limited amount of RAM
-export PEAK_THRESH=$1
+
+PEAK_THRESH=10
 
 export SIFTKEY_CORES
 
 ARGC=$#  # Number of args, not counting $0
+
+if [ $ARGC -ge 2 ]
+then
+    PEAK_THRESH=$1
+fi
 
 if [ $ARGC -ge 3 ]
 then
@@ -35,7 +41,8 @@ then
     MAX_MATCHING_SEQ=$4
 fi
 
-# Make this global, so RunBundler.sh can access it
+export PEAK_THRESH
+
 export MAX_MATCHING_SEQ
 
 BASE_PATH=$(dirname $(which $0));
