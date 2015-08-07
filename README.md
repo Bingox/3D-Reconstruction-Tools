@@ -20,7 +20,8 @@ We replace the UBC (D. Lowe's) sift tool with the VLFeat in the software Bundler
 
 These shells support parallel computing of SIFT.
 
-Usage: running mRunSFM.sh [PEAK_THRESH] [IMAGES_PER_CLUSTER] [CPU_CORES] [MAX_MATCHING_SEQ] in image folder.
+Usage: run the following command in image folder.
+> mRunSFM.sh [PEAK_THRESH] [IMAGES_PER_CLUSTER] [CPU_CORES] [MAX_MATCHING_SEQ]
 
 
 Thanks all the people who have contributed to the 3d reconstruction.
