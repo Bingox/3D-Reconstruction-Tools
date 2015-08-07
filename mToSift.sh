@@ -63,7 +63,7 @@ for d in `ls -1 $IMAGE_DIR | egrep "jpg$"`; do
 				continue
 			fi
 		fi
-		mogrify -format pgm $IMAGE_DIR/$d; $SIFT $pgm_file --peak-thresh=$PEAK_THRESH; $VLTOUBC $sift_file; rm $pgm_file; gzip -f $key_file
+		mogrify -format pgm $IMAGE_DIR/$d; $SIFT $pgm_file --peak-thresh=$PEAK_THRESH; $VLTOUBC $sift_file; rm $pgm_file;# gzip -f $key_file
 	} &
 	if ((i % $SIFT_CORES == 0)); then
 		wait
