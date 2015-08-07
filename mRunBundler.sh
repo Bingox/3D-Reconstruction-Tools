@@ -6,6 +6,8 @@
 # A script for preparing a set of image for use with the Bundler 
 # structure-from-motion system.
 #
+# Usage: RunBundler.sh [image_dir]
+#
 # The image_dir argument is the directory containing the input images.
 # If image_dir is omitted, the current directory is used.
 #
@@ -29,10 +31,8 @@ then
     MATCHKEYS=$BASE_PATH/bin/KeyMatchFull.exe
     BUNDLER=$BASE_PATH/bin/Bundler.exe
 else
-#    MATCHKEYS=$BASE_PATH/bin/KeyMatchFull
-	MATCHKEYS=$BASE_PATH/bin/SiftMatcher
-	EXTRACTKEYS=$BASE_PATH/bin/RunCmdParallel
-    BUNDLER=$BASE_PATH/bin/Bundler
+    MATCHKEYS=$BASE_PATH/Output/src/KeyMatchFull
+    BUNDLER=$BASE_PATH/Output/src/Bundler
 fi
 
 TO_SIFT=$BASE_PATH/bin/mToSift.sh
@@ -46,10 +46,11 @@ then
 fi
 
 # Rename ".JPG" to ".jpg"
-for d in `ls -1 $IMAGE_DIR | egrep ".JPG$"`
-do 
+for d in `ls -1 $IMAGE_DIR | egrep ".JPG$"`; do {
     mv $IMAGE_DIR/$d $IMAGE_DIR/`echo $d | sed 's/\.JPG/\.jpg/'`
+} &
 done
+wait
 
 # Create the list of images
 find $IMAGE_DIR -maxdepth 1 | egrep ".jpg$" | sort > list_tmp.txt
@@ -57,21 +58,19 @@ $EXTRACT_FOCAL list_tmp.txt
 cp prepare/list.txt .
 
 # Run the ToSift script to generate a list of SIFT commands
-#echo "[- Extracting keypoints -]"
-rm -f sift.txt
-$TO_SIFT $IMAGE_DIR > sift.txt 
+echo "[- Extracting keypoints -]"
+# rm -f sift.txt
+$TO_SIFT $IMAGE_DIR # > sift.txt 
 
 # Execute the SIFT commands
 # sh sift.txt
-$EXTRACTKEYS sift.txt $SIFTKEY_CORES
 
 # Match images (can take a while)
 echo "[- Matching keypoints (this can take a while) -]"
 sed 's/\.jpg$/\.key/' list_tmp.txt > list_keys.txt
 sleep 1
-echo $MATCHKEYS -s $MAX_MATCHING_SEQ list_keys.txt matches.init.txt 
-$MATCHKEYS -s $MAX_MATCHING_SEQ list_keys.txt matches.init.txt
-
+echo $MATCHKEYS list_keys.txt matches.init.txt
+$MATCHKEYS list_keys.txt matches.init.txt
 
 # Generate the options file for running bundler 
 mkdir bundle

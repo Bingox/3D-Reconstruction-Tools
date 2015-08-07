@@ -15,7 +15,10 @@ PMVS/CMVS: http://www.di.ens.fr/cmvs/
 
 We also reference the Nghia Ho's RunSFM software (http://nghiaho.com/)
 
-Here we only give our modification and patches. We replace the UBC (D. Lowe's) sift tool with the VLFeat in the software Bundler. Since they have different data structures of SIFT descriptor, we give a script to convert the VLFeat's to D. Lowe's to fit the Bunder. In addition, the VLFeat supports controling the number of SIFT keypoints by providing a parameter named peak_threshold.
+Here we only give our modification and patches.
+We replace the UBC (D. Lowe's) sift tool with the VLFeat in the software Bundler. Since they have different data structures of SIFT descriptor, we give a script to convert the VLFeat's to D. Lowe's to fit the Bundler. In addition, the VLFeat supports controling the number of SIFT keypoints by providing a parameter named peak_threshold.
+
+These shells support parallel computing of SIFT.
 
 Usage: running mRunSFM.sh [PEAK_THRESH] [IMAGES_PER_CLUSTER] [CPU_CORES] [MAX_MATCHING_SEQ] in image folder.
 

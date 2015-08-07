@@ -9,6 +9,8 @@ IMAGE_DIR="."
 
 OS=`uname -o`
 
+SIFT_CORES=4
+
 if [ $OS == "Cygwin" ]
 then
     SIFT=$BIN_PATH/siftWin32.exe
@@ -43,21 +45,35 @@ while getopts ":r" opt; do
 	esac
 done
 
-for d in `ls -1 $IMAGE_DIR | egrep "jpg$"`
-do 
-    pgm_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/pgm/'`
-    key_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/key/'`
-    sift_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/sift/'`
+i=0
+for d in `ls -1 $IMAGE_DIR | egrep "jpg$"`; do
+	((i++))
+	{
+		pgm_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/pgm/'`
+		key_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/key/'`
+		sift_file=$IMAGE_DIR/`echo $d | sed 's/jpg$/sift/'`
 
-	if [ $RECOVERY_MODE -eq 1 ]
-	then
-		gzip -t $key_file.gz 2> /dev/null
-		ret=$?
-
-		if [ $ret -eq 0 ]
+		if [ $RECOVERY_MODE -eq 1 ]
 		then
-			continue
+			gzip -t $key_file.gz 2> /dev/null
+			ret=$?
+
+			if [ $ret -eq 0 ]
+			then
+				continue
+			fi
 		fi
-	fi
-    echo "mogrify -format pgm $IMAGE_DIR/$d; $SIFT $pgm_file --peak-thresh=$PEAK_THRESH; $VLTOUBC $sift_file; rm $pgm_file; gzip -f $key_file"
+		mogrify -format pgm $IMAGE_DIR/$d; $SIFT $pgm_file --peak-thresh=$PEAK_THRESH; $VLTOUBC $sift_file; rm $pgm_file; gzip -f $key_file
+	} &
+	if ((i % $SIFT_CORES == 0)); then
+		wait
+		echo "finished $SIFT_CORES task"
+	fi	
 done
+
+if ((i % $SIFT_CORES > 0)); then
+	wait
+	echo "finished "$((i % $SIFT_CORES))" task"
+fi
+
+echo "sift finished"
